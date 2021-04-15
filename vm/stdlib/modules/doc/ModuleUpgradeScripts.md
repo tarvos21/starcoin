@@ -7,6 +7,7 @@
 
 -  [Function `propose_module_upgrade`](#0x1_ModuleUpgradeScripts_propose_module_upgrade)
 -  [Function `update_module_upgrade_strategy`](#0x1_ModuleUpgradeScripts_update_module_upgrade_strategy)
+-  [Function `update_two_phase_strategy_config`](#0x1_ModuleUpgradeScripts_update_two_phase_strategy_config)
 -  [Function `submit_module_upgrade_plan`](#0x1_ModuleUpgradeScripts_submit_module_upgrade_plan)
 -  [Function `cancel_upgrade_plan`](#0x1_ModuleUpgradeScripts_cancel_upgrade_plan)
 -  [Specification](#@Specification_0)
@@ -86,11 +87,35 @@
     };
 
     // 2. <b>update</b> strategy
-    <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_module_upgrade_strategy">PackageTxnManager::update_module_upgrade_strategy</a>(
+    <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_module_upgrade_strategy_v2">PackageTxnManager::update_module_upgrade_strategy_v2</a>(
         &signer,
         strategy,
         <a href="Option.md#0x1_Option_none">Option::none</a>&lt;u64&gt;(),
     );
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_ModuleUpgradeScripts_update_two_phase_strategy_config"></a>
+
+## Function `update_two_phase_strategy_config`
+
+
+
+<pre><code><b>public</b>(<b>script</b>) <b>fun</b> <a href="ModuleUpgradeScripts.md#0x1_ModuleUpgradeScripts_update_two_phase_strategy_config">update_two_phase_strategy_config</a>(account: signer, package_address: address, min_time_limit: u64, enforced: bool)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<b>script</b>) <b>fun</b> <a href="ModuleUpgradeScripts.md#0x1_ModuleUpgradeScripts_update_two_phase_strategy_config">update_two_phase_strategy_config</a>(account: signer, package_address: address, min_time_limit: u64, enforced: bool) {
+    <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_two_phase_strategy_config">PackageTxnManager::update_two_phase_strategy_config</a>(&account, package_address, min_time_limit, enforced);
 }
 </code></pre>
 

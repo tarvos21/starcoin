@@ -29,7 +29,6 @@ module ModuleUpgradeScripts {
         );
     }
 
-
     public(script) fun update_module_upgrade_strategy(
         signer: signer,
         strategy: u8,
@@ -42,13 +41,16 @@ module ModuleUpgradeScripts {
         };
 
         // 2. update strategy
-        PackageTxnManager::update_module_upgrade_strategy(
+        PackageTxnManager::update_module_upgrade_strategy_v2(
             &signer,
             strategy,
             Option::none<u64>(),
         );
     }
 
+    public(script) fun update_two_phase_strategy_config(account: signer, package_address: address, min_time_limit: u64, enforced: bool) {
+        PackageTxnManager::update_two_phase_strategy_config(&account, package_address, min_time_limit, enforced);
+    }
 
     public(script) fun submit_module_upgrade_plan<Token: copy + drop + store>(
         _signer: signer,

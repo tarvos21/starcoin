@@ -11,6 +11,8 @@ The module provides strategies for module upgrading.
 -  [Resource `ModuleUpgradeStrategy`](#0x1_PackageTxnManager_ModuleUpgradeStrategy)
 -  [Resource `TwoPhaseUpgrade`](#0x1_PackageTxnManager_TwoPhaseUpgrade)
 -  [Struct `TwoPhaseUpgradeConfig`](#0x1_PackageTxnManager_TwoPhaseUpgradeConfig)
+-  [Resource `TwoPhaseUpgradeV2`](#0x1_PackageTxnManager_TwoPhaseUpgradeV2)
+-  [Struct `TwoPhaseUpgradeConfigV2`](#0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2)
 -  [Struct `UpgradeEvent`](#0x1_PackageTxnManager_UpgradeEvent)
 -  [Constants](#@Constants_0)
 -  [Function `get_strategy_arbitrary`](#0x1_PackageTxnManager_get_strategy_arbitrary)
@@ -18,18 +20,27 @@ The module provides strategies for module upgrading.
 -  [Function `get_strategy_new_module`](#0x1_PackageTxnManager_get_strategy_new_module)
 -  [Function `get_strategy_freeze`](#0x1_PackageTxnManager_get_strategy_freeze)
 -  [Function `get_default_min_time_limit`](#0x1_PackageTxnManager_get_default_min_time_limit)
+-  [Function `update_two_phase_strategy_config`](#0x1_PackageTxnManager_update_two_phase_strategy_config)
+-  [Function `is_enforced`](#0x1_PackageTxnManager_is_enforced)
 -  [Function `update_module_upgrade_strategy`](#0x1_PackageTxnManager_update_module_upgrade_strategy)
+-  [Function `update_module_upgrade_strategy_v2`](#0x1_PackageTxnManager_update_module_upgrade_strategy_v2)
 -  [Function `account_address`](#0x1_PackageTxnManager_account_address)
 -  [Function `destroy_upgrade_plan_cap`](#0x1_PackageTxnManager_destroy_upgrade_plan_cap)
 -  [Function `extract_submit_upgrade_plan_cap`](#0x1_PackageTxnManager_extract_submit_upgrade_plan_cap)
 -  [Function `submit_upgrade_plan`](#0x1_PackageTxnManager_submit_upgrade_plan)
 -  [Function `submit_upgrade_plan_with_cap`](#0x1_PackageTxnManager_submit_upgrade_plan_with_cap)
+-  [Function `convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2`](#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2)
+-  [Function `submit_upgrade_plan_with_cap_v2`](#0x1_PackageTxnManager_submit_upgrade_plan_with_cap_v2)
 -  [Function `cancel_upgrade_plan`](#0x1_PackageTxnManager_cancel_upgrade_plan)
+-  [Function `cancel_upgrade_plan_v2`](#0x1_PackageTxnManager_cancel_upgrade_plan_v2)
 -  [Function `cancel_upgrade_plan_with_cap`](#0x1_PackageTxnManager_cancel_upgrade_plan_with_cap)
+-  [Function `cancel_upgrade_plan_with_cap_v2`](#0x1_PackageTxnManager_cancel_upgrade_plan_with_cap_v2)
 -  [Function `get_module_upgrade_strategy`](#0x1_PackageTxnManager_get_module_upgrade_strategy)
 -  [Function `get_upgrade_plan`](#0x1_PackageTxnManager_get_upgrade_plan)
+-  [Function `get_upgrade_plan_v2`](#0x1_PackageTxnManager_get_upgrade_plan_v2)
 -  [Function `check_package_txn`](#0x1_PackageTxnManager_check_package_txn)
 -  [Function `finish_upgrade_plan`](#0x1_PackageTxnManager_finish_upgrade_plan)
+-  [Function `finish_upgrade_plan_v2`](#0x1_PackageTxnManager_finish_upgrade_plan_v2)
 -  [Function `package_txn_prologue`](#0x1_PackageTxnManager_package_txn_prologue)
 -  [Function `package_txn_epilogue`](#0x1_PackageTxnManager_package_txn_epilogue)
 -  [Specification](#@Specification_1)
@@ -233,6 +244,86 @@ config of two phase upgrade strategy.
 
 </details>
 
+<a name="0x1_PackageTxnManager_TwoPhaseUpgradeV2"></a>
+
+## Resource `TwoPhaseUpgradeV2`
+
+data of two phase upgrade strategy.
+
+
+<pre><code><b>resource</b> <b>struct</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>config: <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2">PackageTxnManager::TwoPhaseUpgradeConfigV2</a></code>
+</dt>
+<dd>
+
+</dd>
+<dt>
+<code>plan: <a href="Option.md#0x1_Option_Option">Option::Option</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">PackageTxnManager::UpgradePlan</a>&gt;</code>
+</dt>
+<dd>
+
+</dd>
+<dt>
+<code>version_cap: <a href="Config.md#0x1_Config_ModifyConfigCapability">Config::ModifyConfigCapability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;</code>
+</dt>
+<dd>
+
+</dd>
+<dt>
+<code>upgrade_event: <a href="Event.md#0x1_Event_EventHandle">Event::EventHandle</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">PackageTxnManager::UpgradeEvent</a>&gt;</code>
+</dt>
+<dd>
+
+</dd>
+</dl>
+
+
+</details>
+
+<a name="0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2"></a>
+
+## Struct `TwoPhaseUpgradeConfigV2`
+
+config of two phase upgrade strategy.
+
+
+<pre><code><b>struct</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2">TwoPhaseUpgradeConfigV2</a>
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>min_time_limit: u64</code>
+</dt>
+<dd>
+
+</dd>
+<dt>
+<code>enforced: bool</code>
+</dt>
+<dd>
+
+</dd>
+</dl>
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_UpgradeEvent"></a>
 
 ## Struct `UpgradeEvent`
@@ -301,6 +392,15 @@ module upgrade event.
 
 
 <pre><code><b>const</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_EPACKAGE_HASH_INCORRECT">EPACKAGE_HASH_INCORRECT</a>: u64 = 103;
+</code></pre>
+
+
+
+<a name="0x1_PackageTxnManager_ESENDER_AND_PACKAGE_ADDRESS_MISMATCH"></a>
+
+
+
+<pre><code><b>const</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_ESENDER_AND_PACKAGE_ADDRESS_MISMATCH">ESENDER_AND_PACKAGE_ADDRESS_MISMATCH</a>: u64 = 109;
 </code></pre>
 
 
@@ -501,6 +601,65 @@ default min time limit
 
 </details>
 
+<a name="0x1_PackageTxnManager_update_two_phase_strategy_config"></a>
+
+## Function `update_two_phase_strategy_config`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_two_phase_strategy_config">update_two_phase_strategy_config</a>(account: &signer, package_address: address, min_time_limit: u64, enforced: bool)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_two_phase_strategy_config">update_two_phase_strategy_config</a>(account: &signer, package_address: address, min_time_limit: u64, enforced: bool) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a> {
+    <b>assert</b>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address) == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_NOT_TWO_PHASE">ESTRATEGY_NOT_TWO_PHASE</a>));
+    <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address) && package_address != <a href="CoreAddresses.md#0x1_CoreAddresses_GENESIS_ADDRESS">CoreAddresses::GENESIS_ADDRESS</a>()) {
+        <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account, package_address);
+    };
+    <b>let</b> config = &<b>mut</b> borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address).config;
+    config.min_time_limit = min_time_limit;
+    config.enforced = enforced;
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_PackageTxnManager_is_enforced"></a>
+
+## Function `is_enforced`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_is_enforced">is_enforced</a>(package_address: address): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_is_enforced">is_enforced</a>(package_address: address): bool <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>{
+    <b>assert</b>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address) == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_NOT_TWO_PHASE">ESTRATEGY_NOT_TWO_PHASE</a>));
+    <b>if</b> (!<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address)) {
+        <b>return</b> <b>false</b>
+    };
+    <b>let</b> config = &borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address).config;
+    config.enforced
+}
+</code></pre>
+
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_update_module_upgrade_strategy"></a>
 
 ## Function `update_module_upgrade_strategy`
@@ -546,6 +705,70 @@ Update account's ModuleUpgradeStrategy
         <a href="Config.md#0x1_Config_destroy_modify_config_capability">Config::destroy_modify_config_capability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;(version_cap);
         // <a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a> may be extracted
         <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(account_address)){
+            <b>let</b> cap = move_from&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(account_address);
+            <a href="PackageTxnManager.md#0x1_PackageTxnManager_destroy_upgrade_plan_cap">destroy_upgrade_plan_cap</a>(cap);
+        };
+    };
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_PackageTxnManager_update_module_upgrade_strategy_v2"></a>
+
+## Function `update_module_upgrade_strategy_v2`
+
+Update account's ModuleUpgradeStrategy
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_module_upgrade_strategy_v2">update_module_upgrade_strategy_v2</a>(account: &signer, strategy: u8, min_time: <a href="Option.md#0x1_Option_Option">Option::Option</a>&lt;u64&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_update_module_upgrade_strategy_v2">update_module_upgrade_strategy_v2</a>(account: &signer, strategy: u8, min_time: <a href="Option.md#0x1_Option">Option</a>&lt;u64&gt;) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>{
+    <b>assert</b>(strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_ARBITRARY">STRATEGY_ARBITRARY</a> || strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a> || strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_NEW_MODULE">STRATEGY_NEW_MODULE</a> || strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_FREEZE">STRATEGY_FREEZE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_EUNKNOWN_STRATEGY">EUNKNOWN_STRATEGY</a>));
+    <b>let</b> account_address = <a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account);
+    <b>let</b> previous_strategy = <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(account_address);
+    <b>assert</b>(strategy &gt; previous_strategy, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_INCORRECT">ESTRATEGY_INCORRECT</a>));
+    <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>&gt;(account_address)) {
+        borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>&gt;(account_address).strategy = strategy;
+    }<b>else</b>{
+        move_to(account, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{ strategy: strategy});
+    };
+    <b>if</b> (strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>){
+        <b>let</b> version_cap = <a href="Config.md#0x1_Config_extract_modify_config_capability">Config::extract_modify_config_capability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;(account);
+        <b>let</b> min_time_limit = <a href="Option.md#0x1_Option_get_with_default">Option::get_with_default</a>(&min_time, <a href="PackageTxnManager.md#0x1_PackageTxnManager_DEFAULT_MIN_TIME_LIMIT">DEFAULT_MIN_TIME_LIMIT</a>);
+        move_to(account, <a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>{ account_address: account_address});
+        move_to(account, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>{
+            config: <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2">TwoPhaseUpgradeConfigV2</a>{min_time_limit: min_time_limit, enforced: <b>false</b>},
+            plan: <a href="Option.md#0x1_Option_none">Option::none</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt;(),
+            version_cap: version_cap,
+            upgrade_event: <a href="Event.md#0x1_Event_new_event_handle">Event::new_event_handle</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">Self::UpgradeEvent</a>&gt;(account)}
+        );
+    };
+    //clean two phase upgrade <b>resource</b>
+    <b>if</b> (previous_strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>){
+        <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(account_address)) {
+            <b>let</b> tpu = move_from&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(account_address);
+            <b>let</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>{plan:_, version_cap, upgrade_event, config: _} = tpu;
+            <a href="Event.md#0x1_Event_destroy_handle">Event::destroy_handle</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">Self::UpgradeEvent</a>&gt;(upgrade_event);
+            <a href="Config.md#0x1_Config_destroy_modify_config_capability">Config::destroy_modify_config_capability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;(version_cap);
+        };
+        <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(account_address)) {
+            <b>let</b> tpu = move_from&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(account_address);
+            <b>let</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>{plan:_, version_cap, upgrade_event, config: _} = tpu;
+            <a href="Event.md#0x1_Event_destroy_handle">Event::destroy_handle</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">Self::UpgradeEvent</a>&gt;(upgrade_event);
+            <a href="Config.md#0x1_Config_destroy_modify_config_capability">Config::destroy_modify_config_capability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;(version_cap);
+        };
+        // <a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a> may be extracted
+        <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(account_address)) {
             <b>let</b> cap = move_from&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(account_address);
             <a href="PackageTxnManager.md#0x1_PackageTxnManager_destroy_upgrade_plan_cap">destroy_upgrade_plan_cap</a>(cap);
         };
@@ -690,6 +913,74 @@ Submit a new upgrade plan.
 
 </details>
 
+<a name="0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2"></a>
+
+## Function `convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2`
+
+
+
+<pre><code><b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account: &signer, package_address: address)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account: &signer, package_address: address) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a> {
+    <b>let</b> account_address = <a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account);
+    // sender should be package owner, <b>except</b> for genesis
+    <b>assert</b>(account_address == package_address, <a href="Errors.md#0x1_Errors_requires_address">Errors::requires_address</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESENDER_AND_PACKAGE_ADDRESS_MISMATCH">ESENDER_AND_PACKAGE_ADDRESS_MISMATCH</a>));
+    <b>let</b> tpu = move_from&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(account_address);
+    <b>let</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>{config, plan, version_cap, upgrade_event} = tpu;
+    move_to(account, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>{
+        config: <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeConfigV2">TwoPhaseUpgradeConfigV2</a>{
+            min_time_limit: config.min_time_limit,
+            enforced: <b>false</b>, //not enforced by default
+        },
+        plan: plan,
+        version_cap: version_cap,
+        upgrade_event: upgrade_event
+    });
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_PackageTxnManager_submit_upgrade_plan_with_cap_v2"></a>
+
+## Function `submit_upgrade_plan_with_cap_v2`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_submit_upgrade_plan_with_cap_v2">submit_upgrade_plan_with_cap_v2</a>(account: &signer, cap: &<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">PackageTxnManager::UpgradePlanCapability</a>, package_hash: vector&lt;u8&gt;, version: u64)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_submit_upgrade_plan_with_cap_v2">submit_upgrade_plan_with_cap_v2</a>(account: &signer, cap: &<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>, package_hash: vector&lt;u8&gt;, version: u64) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{
+    <b>let</b> package_address = cap.account_address;
+    <b>assert</b>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address) == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_NOT_TWO_PHASE">ESTRATEGY_NOT_TWO_PHASE</a>));
+    <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address) && package_address != <a href="CoreAddresses.md#0x1_CoreAddresses_GENESIS_ADDRESS">CoreAddresses::GENESIS_ADDRESS</a>()) {
+        <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account, package_address);
+    };
+    <b>let</b> tpu = borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address);
+    <b>let</b> active_after_time = <a href="Timestamp.md#0x1_Timestamp_now_milliseconds">Timestamp::now_milliseconds</a>() + tpu.config.min_time_limit;
+    tpu.plan = <a href="Option.md#0x1_Option_some">Option::some</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a> { package_hash, active_after_time, version });
+}
+</code></pre>
+
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_cancel_upgrade_plan"></a>
 
 ## Function `cancel_upgrade_plan`
@@ -717,6 +1008,32 @@ Cancel a module upgrade plan.
 
 </details>
 
+<a name="0x1_PackageTxnManager_cancel_upgrade_plan_v2"></a>
+
+## Function `cancel_upgrade_plan_v2`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_cancel_upgrade_plan_v2">cancel_upgrade_plan_v2</a>(account: &signer)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_cancel_upgrade_plan_v2">cancel_upgrade_plan_v2</a>(account: &signer) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{
+    <b>let</b> account_address = <a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account);
+    <b>let</b> cap = borrow_global&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(account_address);
+    <a href="PackageTxnManager.md#0x1_PackageTxnManager_cancel_upgrade_plan_with_cap_v2">cancel_upgrade_plan_with_cap_v2</a>(account, cap);
+}
+</code></pre>
+
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_cancel_upgrade_plan_with_cap"></a>
 
 ## Function `cancel_upgrade_plan_with_cap`
@@ -737,6 +1054,37 @@ Cancel a module upgrade plan with given cap.
     <b>let</b> account_address = cap.account_address;
     <b>assert</b>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(account_address) == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_NOT_TWO_PHASE">ESTRATEGY_NOT_TWO_PHASE</a>));
     <b>let</b> tpu = borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(account_address);
+    <b>assert</b>(<a href="Option.md#0x1_Option_is_some">Option::is_some</a>(&tpu.plan), <a href="Errors.md#0x1_Errors_invalid_state">Errors::invalid_state</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_EUPGRADE_PLAN_IS_NONE">EUPGRADE_PLAN_IS_NONE</a>));
+    tpu.plan = <a href="Option.md#0x1_Option_none">Option::none</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt;();
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_PackageTxnManager_cancel_upgrade_plan_with_cap_v2"></a>
+
+## Function `cancel_upgrade_plan_with_cap_v2`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_cancel_upgrade_plan_with_cap_v2">cancel_upgrade_plan_with_cap_v2</a>(account: &signer, cap: &<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">PackageTxnManager::UpgradePlanCapability</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_cancel_upgrade_plan_with_cap_v2">cancel_upgrade_plan_with_cap_v2</a>(account: &signer, cap: &<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>,<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{
+    <b>let</b> package_address = cap.account_address;
+    <b>assert</b>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address) == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_ESTRATEGY_NOT_TWO_PHASE">ESTRATEGY_NOT_TWO_PHASE</a>));
+    <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address) && package_address != <a href="CoreAddresses.md#0x1_CoreAddresses_GENESIS_ADDRESS">CoreAddresses::GENESIS_ADDRESS</a>()) {
+        <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account, package_address);
+    };
+    <b>let</b> tpu = borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address);
     <b>assert</b>(<a href="Option.md#0x1_Option_is_some">Option::is_some</a>(&tpu.plan), <a href="Errors.md#0x1_Errors_invalid_state">Errors::invalid_state</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_EUPGRADE_PLAN_IS_NONE">EUPGRADE_PLAN_IS_NONE</a>));
     tpu.plan = <a href="Option.md#0x1_Option_none">Option::none</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt;();
 }
@@ -804,6 +1152,38 @@ Get module upgrade plan of an address.
 
 </details>
 
+<a name="0x1_PackageTxnManager_get_upgrade_plan_v2"></a>
+
+## Function `get_upgrade_plan_v2`
+
+Get module upgrade plan of an address.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_upgrade_plan_v2">get_upgrade_plan_v2</a>(module_address: address): <a href="Option.md#0x1_Option_Option">Option::Option</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">PackageTxnManager::UpgradePlan</a>&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_upgrade_plan_v2">get_upgrade_plan_v2</a>(module_address: address): <a href="Option.md#0x1_Option">Option</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt; <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a> {
+    <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(module_address)) {
+        *&borrow_global&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(module_address).plan
+    }
+    <b>else</b> <b>if</b> (<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(module_address)) {
+        *&borrow_global&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(module_address).plan
+    }<b>else</b>{
+        <a href="Option.md#0x1_Option_none">Option::none</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt;()
+    }
+}
+</code></pre>
+
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_check_package_txn"></a>
 
 ## Function `check_package_txn`
@@ -820,12 +1200,12 @@ Check againest on the given package data.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_check_package_txn">check_package_txn</a>(package_address: address, package_hash: vector&lt;u8&gt;) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_check_package_txn">check_package_txn</a>(package_address: address, package_hash: vector&lt;u8&gt;) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>{
     <b>let</b> strategy = <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address);
     <b>if</b> (strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_ARBITRARY">STRATEGY_ARBITRARY</a>){
         //do nothing
     }<b>else</b> <b>if</b>(strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>){
-        <b>let</b> plan_opt = <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_upgrade_plan">get_upgrade_plan</a>(package_address);
+        <b>let</b> plan_opt = <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_upgrade_plan_v2">get_upgrade_plan_v2</a>(package_address);
         <b>assert</b>(<a href="Option.md#0x1_Option_is_some">Option::is_some</a>(&plan_opt), <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_EUPGRADE_PLAN_IS_NONE">EUPGRADE_PLAN_IS_NONE</a>));
         <b>let</b> plan = <a href="Option.md#0x1_Option_borrow">Option::borrow</a>(&plan_opt);
         <b>assert</b>(*&plan.package_hash == package_hash, <a href="Errors.md#0x1_Errors_invalid_argument">Errors::invalid_argument</a>(<a href="PackageTxnManager.md#0x1_PackageTxnManager_EPACKAGE_HASH_INCORRECT">EPACKAGE_HASH_INCORRECT</a>));
@@ -875,6 +1255,43 @@ Check againest on the given package data.
 
 </details>
 
+<a name="0x1_PackageTxnManager_finish_upgrade_plan_v2"></a>
+
+## Function `finish_upgrade_plan_v2`
+
+
+
+<pre><code><b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_finish_upgrade_plan_v2">finish_upgrade_plan_v2</a>(account: &signer, package_address: address)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_finish_upgrade_plan_v2">finish_upgrade_plan_v2</a>(account: &signer, package_address: address) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a> {
+    <b>let</b> account_address = <a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account);
+    <b>let</b> tpu = borrow_global_mut&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>&gt;(package_address);
+    <b>if</b> (<a href="Option.md#0x1_Option_is_some">Option::is_some</a>(&tpu.plan)) {
+        <b>let</b> plan = <a href="Option.md#0x1_Option_borrow">Option::borrow</a>(&tpu.plan);
+        <a href="Config.md#0x1_Config_set_with_capability">Config::set_with_capability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;(&<b>mut</b> tpu.version_cap, <a href="Version.md#0x1_Version_new_version">Version::new_version</a>(plan.version));
+        <a href="Event.md#0x1_Event_emit_event">Event::emit_event</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">Self::UpgradeEvent</a>&gt;(&<b>mut</b> tpu.upgrade_event, <a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradeEvent">UpgradeEvent</a> {
+            package_address: package_address,
+            package_hash: *&plan.package_hash,
+            version: plan.version});
+    };
+    tpu.plan = <a href="Option.md#0x1_Option_none">Option::none</a>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlan">UpgradePlan</a>&gt;();
+    <b>if</b> (account_address == package_address && <b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address)) {
+        <a href="PackageTxnManager.md#0x1_PackageTxnManager_convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2">convert_TwoPhaseUpgrade_to_TwoPhaseUpgradeV2</a>(account, package_address);
+    };
+}
+</code></pre>
+
+
+
+</details>
+
 <a name="0x1_PackageTxnManager_package_txn_prologue"></a>
 
 ## Function `package_txn_prologue`
@@ -891,7 +1308,7 @@ Prologue of package transaction.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_package_txn_prologue">package_txn_prologue</a>(account: &signer, package_address: address, package_hash: vector&lt;u8&gt;) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_package_txn_prologue">package_txn_prologue</a>(account: &signer, package_address: address, package_hash: vector&lt;u8&gt;) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a> {
     // Can only be invoked by genesis account
     <a href="CoreAddresses.md#0x1_CoreAddresses_assert_genesis_address">CoreAddresses::assert_genesis_address</a>(account);
     <a href="PackageTxnManager.md#0x1_PackageTxnManager_check_package_txn">check_package_txn</a>(package_address, package_hash);
@@ -918,13 +1335,13 @@ Package txn finished, and clean UpgradePlan
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_package_txn_epilogue">package_txn_epilogue</a>(account: &signer, _txn_sender: address, package_address: address, success: bool) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_package_txn_epilogue">package_txn_epilogue</a>(account: &signer, _txn_sender: address, package_address: address, success: bool) <b>acquires</b> <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgradeV2">TwoPhaseUpgradeV2</a>, <a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a> {
     // Can only be invoked by genesis account
     <a href="CoreAddresses.md#0x1_CoreAddresses_assert_genesis_address">CoreAddresses::assert_genesis_address</a>(account);
     <b>let</b> strategy = <a href="PackageTxnManager.md#0x1_PackageTxnManager_get_module_upgrade_strategy">get_module_upgrade_strategy</a>(package_address);
     <b>if</b>(strategy == <a href="PackageTxnManager.md#0x1_PackageTxnManager_STRATEGY_TWO_PHASE">STRATEGY_TWO_PHASE</a>){
         <b>if</b> (success) {
-            <a href="PackageTxnManager.md#0x1_PackageTxnManager_finish_upgrade_plan">finish_upgrade_plan</a>(package_address);
+            <a href="PackageTxnManager.md#0x1_PackageTxnManager_finish_upgrade_plan_v2">finish_upgrade_plan_v2</a>(account, package_address);
         };
     };
 }
@@ -962,7 +1379,7 @@ Package txn finished, and clean UpgradePlan
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_ModuleUpgradeStrategy">ModuleUpgradeStrategy</a>&gt;(<a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account)) && strategy == 0;
 <b>aborts_if</b> strategy == 1 && <b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_UpgradePlanCapability">UpgradePlanCapability</a>&gt;(<a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account));
 <b>aborts_if</b> strategy == 1 && !<b>exists</b>&lt;<a href="Config.md#0x1_Config_ModifyConfigCapabilityHolder">Config::ModifyConfigCapabilityHolder</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;&gt;(<a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account));
-<a name="0x1_PackageTxnManager_holder$21"></a>
+<a name="0x1_PackageTxnManager_holder$30"></a>
 <b>let</b> holder = <b>global</b>&lt;<a href="Config.md#0x1_Config_ModifyConfigCapabilityHolder">Config::ModifyConfigCapabilityHolder</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;&gt;(<a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account));
 <b>aborts_if</b> strategy == 1 && <a href="Option.md#0x1_Option_is_none">Option::is_none</a>&lt;<a href="Config.md#0x1_Config_ModifyConfigCapability">Config::ModifyConfigCapability</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;&gt;(holder.cap);
 <b>aborts_if</b> strategy == 1 && <b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(<a href="Signer.md#0x1_Signer_address_of">Signer::address_of</a>(account));
@@ -1233,7 +1650,7 @@ Package txn finished, and clean UpgradePlan
 
 
 <pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address);
-<a name="0x1_PackageTxnManager_tpu$22"></a>
+<a name="0x1_PackageTxnManager_tpu$31"></a>
 <b>let</b> tpu = <b>global</b>&lt;<a href="PackageTxnManager.md#0x1_PackageTxnManager_TwoPhaseUpgrade">TwoPhaseUpgrade</a>&gt;(package_address);
 <b>aborts_if</b> <a href="Option.md#0x1_Option_is_some">Option::is_some</a>(tpu.plan) && !<b>exists</b>&lt;<a href="Config.md#0x1_Config_Config">Config::Config</a>&lt;<a href="Version.md#0x1_Version_Version">Version::Version</a>&gt;&gt;(tpu.version_cap.account_address);
 </code></pre>

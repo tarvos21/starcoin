@@ -14,7 +14,7 @@ use move_vm_runtime::move_vm_adapter::{MoveVMAdapter, SessionAdapter};
 use starcoin_config::INITIAL_GAS_SCHEDULE;
 use starcoin_logger::prelude::*;
 use starcoin_move_compiler::check_module_compat;
-use starcoin_types::account_config::access_path_for_module_upgrade_strategy;
+use starcoin_types::account_config::{access_path_for_module_upgrade_strategy, access_path_for_two_phase_upgrade_v2};
 use starcoin_types::{
     account_config,
     block_metadata::BlockMetadata,
@@ -27,7 +27,7 @@ use starcoin_types::{
 use starcoin_vm_types::access::ModuleAccess;
 use starcoin_vm_types::account_address::AccountAddress;
 use starcoin_vm_types::account_config::{
-    genesis_address, ModuleUpgradeStrategy, EPILOGUE_NAME, PROLOGUE_NAME,
+    genesis_address, ModuleUpgradeStrategy, TwoPhaseUpgradeV2Resource, EPILOGUE_NAME, PROLOGUE_NAME,
 };
 use starcoin_vm_types::contract_event::ContractEvent;
 use starcoin_vm_types::file_format::CompiledModule;
@@ -206,14 +206,26 @@ impl StarcoinVM {
         self.check_gas(&txn_data)?;
         match transaction.payload() {
             TransactionPayload::Package(package) => {
-                match Self::only_new_module_strategy(remote_cache, package.package_address()) {
+                let enforced = match Self::is_enforced(remote_cache, package.package_address()) {
+                    Err(e) => {
+                        warn!("[VM] Two phase upgrade V2 resource deserialize err : {:?}", e);
+                        return Err(VMStatus::Error(StatusCode::FAILED_TO_DESERIALIZE_RESOURCE));
+                    }
+                    Ok(is_enforced) => is_enforced,
+                };
+                match Self::module_strategy(remote_cache, package.package_address()) {
                     Err(e) => {
                         warn!("[VM]Update module strategy deserialize err : {:?}", e);
                         return Err(VMStatus::Error(StatusCode::FAILED_TO_DESERIALIZE_RESOURCE));
                     }
-                    Ok(only_new_module) => {
+                    Ok(strategy) => {
                         for module in package.modules() {
-                            self.check_compatibility_if_exist(&session, module, only_new_module)?;
+                            self.check_compatibility_if_exist(
+                                &session,
+                                module,
+                                strategy.only_new_module(),
+                                enforced,
+                            )?;
                         }
                     }
                 }
@@ -255,6 +267,7 @@ impl StarcoinVM {
         session: &SessionAdapter<R>,
         module: &Module,
         only_new_module: bool,
+        enforced: bool,
     ) -> Result<(), VMStatus> {
         let compiled_module = match CompiledModule::deserialize(module.code()) {
             Ok(module) => module,
@@ -278,7 +291,7 @@ impl StarcoinVM {
                 .map_err(|e| e.into_vm_status())?;
             let compatible = check_module_compat(pre_version.as_slice(), module.code())
                 .map_err(|e| e.into_vm_status())?;
-            if !compatible {
+            if !compatible && !enforced {
                 warn!("Check module compat error: {:?}", module_id);
                 return Err(errors::verification_error(
                     StatusCode::BACKWARD_INCOMPATIBLE_MODULE_UPDATE,
@@ -292,13 +305,24 @@ impl StarcoinVM {
         Ok(())
     }
 
-    fn only_new_module_strategy(
+    fn module_strategy(
+        remote_cache: &StateViewCache,
+        package_address: AccountAddress,
+    ) -> Result<ModuleUpgradeStrategy> {
+        let strategy_access_path = access_path_for_module_upgrade_strategy(package_address);
+        let data = remote_cache.get(&strategy_access_path)?.ok_or_else(|| {
+            format_err!("Load module upgrade strategy fail, strategy resource not exist.")
+        })?;
+        bcs_ext::from_bytes::<ModuleUpgradeStrategy>(&data)
+    }
+
+    fn is_enforced(
         remote_cache: &StateViewCache,
         package_address: AccountAddress,
     ) -> Result<bool> {
-        let strategy_access_path = access_path_for_module_upgrade_strategy(package_address);
-        if let Some(data) = remote_cache.get(&strategy_access_path)? {
-            Ok(bcs_ext::from_bytes::<ModuleUpgradeStrategy>(&data)?.only_new_module())
+        let two_phase_upgrade_v2_path = access_path_for_two_phase_upgrade_v2(package_address);
+        if let Some(data) = remote_cache.get(&two_phase_upgrade_v2_path)? {
+            Ok(bcs_ext::from_bytes::<TwoPhaseUpgradeV2Resource>(&data)?.enforced())
         } else {
             Ok(false)
         }
@@ -334,12 +358,19 @@ impl StarcoinVM {
                 .map_err(|e| e.into_vm_status())?;
 
             let package_address = package.package_address();
-            match Self::only_new_module_strategy(remote_cache, package_address) {
+            let enforced = match Self::is_enforced(remote_cache, package.package_address()) {
+                Err(e) => {
+                    warn!("[VM] Two phase upgrade V2 resource deserialize err : {:?}", e);
+                    return Err(VMStatus::Error(StatusCode::FAILED_TO_DESERIALIZE_RESOURCE));
+                }
+                Ok(is_enforced) => is_enforced,
+            };
+            match Self::module_strategy(remote_cache, package_address) {
                 Err(e) => {
                     warn!("[VM]Update module strategy deserialize err : {:?}", e);
                     return Err(VMStatus::Error(StatusCode::FAILED_TO_DESERIALIZE_RESOURCE));
                 }
-                Ok(only_new_module) => {
+                Ok(strategy) => {
                     for module in package.modules() {
                         let compiled_module = match CompiledModule::deserialize(module.code()) {
                             Ok(module) => module,
@@ -359,7 +390,12 @@ impl StarcoinVM {
                             .finish(Location::Undefined)
                             .into_vm_status());
                         }
-                        self.check_compatibility_if_exist(&session, module, only_new_module)?;
+                        self.check_compatibility_if_exist(
+                            &session,
+                            module,
+                            strategy.only_new_module(),
+                            enforced,
+                        )?;
 
                         session
                             .verify_module(module.code())
