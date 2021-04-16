@@ -1,0 +1,10 @@
+{
+  "jsonrpc": "2.0",
+  "id": 0,
+  "method": "eth_getProof",
+  "params": [
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    [],
+    "0xbae3b6"
+  ]
+}

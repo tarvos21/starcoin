@@ -29,8 +29,7 @@ module EthStateVerifier {
 
     public fun to_nibble(b: u8): (u8, u8) {
         let n1 = b >> 4;
-        // check the association.
-        let n2 = b << 4 >> 4;
+        let n2 = (b << 4) >> 4;
         (n1, n2)
     }
 
